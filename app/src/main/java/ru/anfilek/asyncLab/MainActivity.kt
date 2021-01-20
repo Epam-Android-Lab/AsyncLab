@@ -1,6 +1,7 @@
 package ru.anfilek.asyncLab
 
 import android.os.*
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import ru.anfilek.asyncLab.databinding.ActivityMainBinding
 
@@ -25,8 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startHandlerThread() {
         handlerThread = MyHandlerThread()
-        handlerThread?.start()
-        handlerThread?.post()
+        handlerThread?.post{ Log.d("www", "start")}
     }
 
     private fun stopHandlerThread() {
