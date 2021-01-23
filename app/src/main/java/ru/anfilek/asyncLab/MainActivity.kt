@@ -15,16 +15,25 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val counterFragment = CounterFragment()
+
         binding.btnStart.setOnClickListener { startHandlerThread() }
         binding.btnStop.setOnClickListener { stopHandlerThread() }
         binding.btnAsync.setOnClickListener { startAsync() }
         binding.btnFreeze.setOnClickListener { freeze() }
+        binding.buttonGame.setOnClickListener{
+            supportFragmentManager.beginTransaction().apply {
+                setReorderingAllowed(true)
+                add(R.id.fragmentContainerView, counterFragment)
+                commit()
+            }
+        }
 
-        testSharedResources()
+        //testSharedResources()
     }
 
-    private fun startHandlerThread() {
-        handlerThread = MyHandlerThread()
+        private fun startHandlerThread() {
+        handlerThread = MyHandlerThread(Handler(Looper.getMainLooper()))
         handlerThread?.start()
         handlerThread?.post()
     }

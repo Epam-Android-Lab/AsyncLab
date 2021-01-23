@@ -5,14 +5,15 @@ import android.os.Message
 import android.util.Log
 import java.util.*
 
-class MyHandlerThread : android.os.HandlerThread(TAG), Handler.Callback {
+class MyHandlerThread (private var handler: Handler) : android.os.HandlerThread(TAG), Handler.Callback {
 
     companion object {
         private const val TAG = "MyHandlerThread"
     }
-
-    lateinit var handler: Handler
+/*
+    private lateinit var handler: Handler
         private set
+ */
 
     override fun onLooperPrepared() {
         handler = Handler(looper, this)
