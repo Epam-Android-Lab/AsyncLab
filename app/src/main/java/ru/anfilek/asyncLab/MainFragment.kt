@@ -2,21 +2,28 @@ package ru.anfilek.asyncLab
 
 import android.os.AsyncTask
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
 import ru.anfilek.asyncLab.databinding.FragmentMainBinding
 
 class MainFragment : Fragment(R.layout.fragment_main) {
 
     private var handlerThread: MyHandlerThread? = null
-    private lateinit var binding: FragmentMainBinding
+    private var _binding: FragmentMainBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragmentMainBinding.inflate(layoutInflater)
         val counterFragment = CounterFragment()
 
         binding.btnStart.setOnClickListener { startHandlerThread() }
@@ -36,13 +43,17 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     }
 
     private fun startHandlerThread() {
-        handlerThread = MyHandlerThread(Handler(Looper.getMainLooper()))
-        handlerThread?.start()
-        handlerThread?.post()
+        handlerThread = MyHandlerThread()
+        handlerThread?.doWork()
+        Toast.makeText(context, "Started!", Toast.LENGTH_SHORT).show()
+        //handlerThread?.start()
+        //handlerThread?.post()
     }
 
     private fun stopHandlerThread() {
         // optional
+        handlerThread?.quit()
+        Toast.makeText(context, "Stop!", Toast.LENGTH_SHORT).show()
     }
 
     private fun startAsync() {
