@@ -2,4 +2,15 @@
     <string name="app_name">Async Lab</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="result">Result</string>
+    <string name="thread_1">THREAD 1</string>
+    <string name="thread_2">THREAD 2</string>
+    <string name="startGame">START</string>
+    <string name="freeze">Freeze!</string>
+    <string name="handler">Handler</string>
+    <string name="stop">Stop</string>
+    <string name="async_task">Async Task</string>
+    <string name="start">Start</string>
+    <string name="start_async">Start async</string>
+    <string name="game_of_threads">GAME OF THREADS</string>
 </resources>

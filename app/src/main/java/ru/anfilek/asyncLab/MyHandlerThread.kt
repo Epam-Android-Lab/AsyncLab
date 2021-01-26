@@ -26,7 +26,7 @@ class MyHandlerThread : android.os.HandlerThread(TAG), Handler.Callback {
     }
  */
 
-    fun post() {
+    private fun post() {
         handler.sendEmptyMessage(Random(10).nextInt())
     }
 

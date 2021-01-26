@@ -45,7 +45,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private fun startHandlerThread() {
         handlerThread = MyHandlerThread()
         handlerThread?.doWork()
-        Toast.makeText(context, "Started!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Start!", Toast.LENGTH_SHORT).show()
         //handlerThread?.start()
         //handlerThread?.post()
     }

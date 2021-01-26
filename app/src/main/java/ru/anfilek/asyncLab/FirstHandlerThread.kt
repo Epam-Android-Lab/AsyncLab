@@ -1,17 +1,16 @@
 package ru.anfilek.asyncLab
 
 import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import kotlin.random.Random
 
-class FirstHandlerThread : android.os.HandlerThread(TAG), Handler.Callback {
+class FirstHandlerThread (private val mainHandler: Handler): android.os.HandlerThread(TAG), Handler.Callback {
 
     private var handler: Handler
 
     init {
         start()
-        handler = Handler(Looper.getMainLooper())
+        handler = Handler(looper)
     }
 
     companion object {
@@ -30,16 +29,27 @@ class FirstHandlerThread : android.os.HandlerThread(TAG), Handler.Callback {
 
         if (msg.data.getInt("key") < 100 && msg.data != null) {
             currentNumber = msg.data.getInt("key") + Random.nextInt(1, 5)
-                //отображение текущего значения в TextView
+            //отображение текущего значения в TextView
+            val newMessage = Message()
+                newMessage.data.apply {
+                    putInt("first", currentNumber)
+                }
+                mainHandler.dispatchMessage(newMessage)
 
             if(currentNumber >= 100) {
                 //отображение победителя
+                val finalMessage = Message()
+                finalMessage.data.apply {
+                    putString("finalResult1", "First thread is Winner!")
+                }
+                mainHandler.dispatchMessage(finalMessage)
 
             } else {
-                msg.data.apply {
+                //передача текущего значения другому потоку
+                newMessage.data.apply {
                     putInt("key", currentNumber)
                 }
-                threadCompetitor.handleMessage(msg)
+                threadCompetitor.handleMessage(newMessage)
             }
         }
         return true
