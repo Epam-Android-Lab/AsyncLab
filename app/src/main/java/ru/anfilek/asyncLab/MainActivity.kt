@@ -6,7 +6,6 @@ import ru.anfilek.asyncLab.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private var handlerThread: MyHandlerThread? = null
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,9 +23,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startHandlerThread() {
-        handlerThread = MyHandlerThread()
-        handlerThread?.start()
-        handlerThread?.post()
+        val mainHandler = Handler(mainLooper) {
+            binding.tv.text = (it.obj as Pair<*, *>).second.toString()
+            return@Handler true
+        }
+        val handlerThread1 = MyHandlerThread("1", mainHandler)
+        val handlerThread2 = MyHandlerThread("2", mainHandler)
+
+        handlerThread1.setAnotherHandler(handlerThread2)
+        handlerThread2.setAnotherHandler(handlerThread1)
+
+        handlerThread1.doWork(1)
     }
 
     private fun stopHandlerThread() {
