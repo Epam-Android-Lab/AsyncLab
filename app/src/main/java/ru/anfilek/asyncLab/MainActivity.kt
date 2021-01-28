@@ -1,7 +1,10 @@
 package ru.anfilek.asyncLab
 
 import android.os.*
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import ru.anfilek.asyncLab.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -20,13 +23,17 @@ class MainActivity : AppCompatActivity() {
         binding.btnAsync.setOnClickListener { startAsync() }
         binding.btnFreeze.setOnClickListener { freeze() }
 
-        testSharedResources()
+        val handler = Handler(Looper.getMainLooper()){
+            binding.tv.text = "${it.data.getString("winner")} thread is WINNER!!!1"
+            true
+        }
+        testSharedResources(handler)
+
     }
 
     private fun startHandlerThread() {
         handlerThread = MyHandlerThread()
-        handlerThread?.start()
-        handlerThread?.post()
+        handlerThread?.post{ Log.d("www", "start")}
     }
 
     private fun stopHandlerThread() {
