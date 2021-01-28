@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
+import androidx.core.os.bundleOf
 import kotlin.random.Random
 
 const val FIRST_THREAD_TAG = "FIRST"
@@ -11,15 +12,16 @@ const val SECOND_THREAD_TAG = "SECOND"
 const val STATUS_WORK = "WORK"
 const val STATUS_DONE = "DONE"
 
-fun testSharedResources() {
-    val thread2 = SecondThreadHandler()
-    val thread1 = FirstThreadHandler(thread2)
+fun testSharedResources(mainHandler: Handler) {
+
+    val thread2 = SecondThreadHandler(mainHandler)
+    val thread1 = FirstThreadHandler(mainHandler)
+    thread1.anotherHandler = thread2
     thread2.anotherHandler = thread1
     thread1.startGame()
 }
 
-class FirstThreadHandler(private val anotherHandler: Handler.Callback) :
-        android.os.HandlerThread(FIRST_THREAD_TAG), Handler.Callback {
+class FirstThreadHandler(private val mainHandler: Handler) : android.os.HandlerThread(FIRST_THREAD_TAG), Handler.Callback {
 
     init {
         start()
@@ -29,12 +31,14 @@ class FirstThreadHandler(private val anotherHandler: Handler.Callback) :
     lateinit var handler: Handler
         private set
 
+    lateinit var anotherHandler: Handler.Callback
+
     private fun prepareHandler() {
         handler = Handler(looper)
     }
 
     override fun handleMessage(msg: Message): Boolean {
-        handleMassageCase(this.name, msg, anotherHandler)
+        handleMassageCase(this.name, msg, anotherHandler, mainHandler, this::quit)
         return true
     }
 
@@ -49,7 +53,7 @@ class FirstThreadHandler(private val anotherHandler: Handler.Callback) :
     }
 }
 
-class SecondThreadHandler : android.os.HandlerThread(SECOND_THREAD_TAG), Handler.Callback {
+class SecondThreadHandler(private val mainHandler: Handler) : android.os.HandlerThread(SECOND_THREAD_TAG), Handler.Callback {
 
     init {
         start()
@@ -62,16 +66,21 @@ class SecondThreadHandler : android.os.HandlerThread(SECOND_THREAD_TAG), Handler
     lateinit var anotherHandler: Handler.Callback
 
     private fun prepareHandler() {
-        handler = Handler(Looper.getMainLooper())
+        handler = Handler(looper)
     }
 
     override fun handleMessage(msg: Message): Boolean {
-        handleMassageCase(this.name, msg, anotherHandler)
+        handleMassageCase(this.name, msg, anotherHandler, mainHandler, this::quit)
         return true
     }
 }
 
-fun handleMassageCase(tag: String, msg: Message, anotherHandler: Handler.Callback) {
+fun handleMassageCase(tag: String,
+                      msg: Message,
+                      anotherHandler: Handler.Callback,
+                      mainHandler: Handler,
+                      quit: () -> Boolean
+) {
     Log.d(tag, msg.data.getString("status") ?: "FAIL")
     Log.d(tag, "${msg.data.getInt("value")}")
     val status: String
@@ -87,5 +96,12 @@ fun handleMassageCase(tag: String, msg: Message, anotherHandler: Handler.Callbac
             putInt("value", value)
         }
         anotherHandler.handleMessage(msg)
+    }
+    else {
+        val msg = Message()
+        msg.data = bundleOf("winner" to tag)
+        msg.target = mainHandler
+        mainHandler.sendMessage(msg)
+        quit()
     }
 }
